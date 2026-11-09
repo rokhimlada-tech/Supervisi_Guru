@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Supervisi Guru</title>
+<style>
+:root{--bg:#eef2f1;--c:#fff;--t:#1b2b34;--m:#5d6d75;--p:#1f5f4a;--p2:#e3f0ea;--b:#d5dedb;--w:#b45309;--d:#b42318}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 "Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--t)}
+header{background:var(--p);color:#fff;padding:12px 18px}header b{font-size:19px;display:block}header span{opacity:.85;font-size:13px}
+.wrap{display:flex;min-height:calc(100vh - 60px)}nav{width:200px;background:var(--c);border-right:1px solid var(--b);padding:10px 0;flex:none}
+nav a{display:block;padding:9px 18px;color:var(--t);text-decoration:none;cursor:pointer;border-left:4px solid transparent}nav a.on{background:var(--p2);border-color:var(--p);font-weight:600}
+main{flex:1;padding:18px;min-width:0}h2{margin:0 0 12px}.card{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:14px;margin-bottom:14px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.st div{background:var(--c);border:1px solid var(--b);border-radius:8px;padding:12px}.st b{font-size:26px;display:block;color:var(--p)}
+.warn{background:#fff4e0;border:1px solid #f0c27a;color:#7a4a00;padding:10px 14px;border-radius:8px;margin-bottom:14px}
+table{border-collapse:collapse;width:100%;background:var(--c)}th,td{border:1px solid var(--b);padding:6px 8px;text-align:left;vertical-align:top}th{background:var(--p2)}.ov{overflow-x:auto}
+button,.b{background:var(--p);color:#fff;border:0;border-radius:6px;padding:7px 13px;cursor:pointer;font:inherit}.b.s{background:#fff;color:var(--p);border:1px solid var(--p)}.b.r{background:var(--d)}.sm{padding:3px 8px;font-size:13px}
+input,select,textarea{font:inherit;padding:6px 8px;border:1px solid #b8c5c1;border-radius:6px;width:100%;background:#fff}label{display:block;font-size:13px;color:var(--m)}label input,label select,label textarea{color:var(--t);margin-top:2px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}.fb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}.fb input,.fb select{width:auto;flex:1 1 140px}
+#mo{display:none;position:fixed;inset:0;background:#0007;z-index:9;overflow:auto;padding:14px}#mo.on{display:block}#m{background:#fff;max-width:900px;margin:0 auto;padding:18px;border-radius:8px}
+#pa{display:none}.tag{padding:2px 8px;border-radius:10px;background:var(--p2);font-size:12px}
+@media(max-width:760px){.wrap{display:block}nav{width:auto;display:flex;overflow-x:auto;padding:0}nav a{white-space:nowrap;border-left:0;border-bottom:3px solid transparent}nav a.on{border-color:var(--p)}main{padding:12px}}
+@page{size:A4;margin:15mm}
+@media print{body>*:not(#pa){display:none!important}#pa{display:block;color:#000;font:12px/1.4 "Times New Roman",serif}#pa table{font-size:11px}#pa th{background:#eee}#pa .n td{border:0;text-align:center}}
+</style></head><body>
+<header><b id="hT"></b><span id="hS"></span></header>
+<div class="wrap"><nav id="nv"></nav><main id="c"></main></div>
+<div id="mo"><div id="m"></div></div><div id="pa"></div>
+<script>
+const $=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)],K='supervisiGuruDB',uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6),today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D0=()=>({set:{app:'Supervisi Guru',sekolah:'',npsn:'',jenjang:'SD',tp:'',sem:'Ganjil',kepsek:'',max:4,th:[85,70,55],url:'',
+obs:`Pembukaan pembelajaran|Guru membuka dengan salam, apersepsi, dan motivasi
+Tujuan pembelajaran|Guru menyampaikan tujuan pembelajaran dengan jelas
+Penguasaan materi|Materi disampaikan benar, runtut, dan kontekstual
+Metode pembelajaran|Metode sesuai tujuan dan karakteristik peserta didik
+Media pembelajaran|Media dan sumber belajar dimanfaatkan secara efektif
+Interaksi guru dan peserta didik|Guru berinteraksi positif dan responsif
+Keaktifan peserta didik|Peserta didik aktif bertanya, berdiskusi, dan berkarya
+Pengelolaan kelas|Kelas tertib dan waktu dikelola dengan baik
+Pelaksanaan asesmen|Asesmen sesuai tujuan dan disertai umpan balik
+Penutup dan refleksi|Guru dan peserta didik menyimpulkan dan merefleksikan pembelajaran`,
+sup:`A. Identitas dan persiapan|Jadwal, surat tugas, dan instrumen supervisi telah disiapkan
+B. Perencanaan pembelajaran|Modul ajar/RPP selaras dengan tujuan pembelajaran
+B. Perencanaan pembelajaran|Rencana asesmen tercantum dalam perangkat
+C. Pelaksanaan pembelajaran|Langkah pembelajaran sesuai perencanaan
+C. Pelaksanaan pembelajaran|Pembelajaran berpusat pada peserta didik
+D. Pengelolaan kelas|Suasana kelas kondusif dan waktu efektif
+E. Media dan sumber belajar|Media dan sumber belajar relevan dan bervariasi
+F. Pelaksanaan asesmen|Asesmen dilaksanakan dan hasilnya ditindaklanjuti
+G. Refleksi dan tindak lanjut|Guru melakukan refleksi dan menyusun tindak lanjut`,
+kom:`Kompetensi pedagogik|Memahami karakteristik peserta didik
+Kompetensi pedagogik|Merancang pembelajaran sesuai tujuan dan kurikulum
+Kompetensi pedagogik|Melaksanakan pembelajaran yang aktif dan bermakna
+Kompetensi pedagogik|Melaksanakan asesmen dan memanfaatkan hasilnya
+Kompetensi profesional|Menguasai materi dan konsep keilmuan mata pelajaran
+Kompetensi profesional|Mengembangkan keprofesian melalui refleksi dan pelatihan
+Kompetensi profesional|Memanfaatkan teknologi dalam pembelajaran
+Kompetensi sosial|Berkomunikasi efektif dengan peserta didik dan rekan kerja
+Kompetensi sosial|Berkolaborasi dengan orang tua dan masyarakat
+Kompetensi sosial|Bersikap inklusif dan menghargai keberagaman
+Kompetensi kepribadian|Berperilaku jujur, disiplin, dan bertanggung jawab
+Kompetensi kepribadian|Menjadi teladan bagi peserta didik
+Kompetensi kepribadian|Bersikap terbuka terhadap umpan balik`,
+per:`Kalender pendidikan
+Program tahunan (Prota)
+Program semester (Promes)
+Capaian pembelajaran/kompetensi
+Tujuan pembelajaran
+Alur tujuan pembelajaran
+Modul ajar/RPP
+Bahan ajar dan media pembelajaran
+LKPD
+Instrumen asesmen
+Daftar nilai dan dokumentasi hasil belajar`},guru:[],jadwal:[],per:[],nil:[],rtl:[],jur:[],last:0});
+let db;try{db=JSON.parse(localStorage[K])}catch(e){}
+db=Object.assign(D0(),db||{});db.set=Object.assign(D0().set,db.set);
+const save=()=>{try{localStorage[K]=JSON.stringify(db)}catch(e){alert('Data gagal disimpan: penyimpanan browser penuh atau diblokir. Segera ekspor backup.')}};
+const lines=t=>String(t||'').split('\n').map(x=>x.trim()).filter(Boolean),
+ind=k=>lines(db.set[k]).map(l=>{const a=l.split('|');return a.length>1?{g:a[0].trim(),i:a.slice(1).join('|').trim()}:{g:'',i:l}}),
+gn=id=>(db.guru.find(g=>g.id==id)||{nama:'(guru dihapus)'}).nama,gk=id=>(db.guru.find(g=>g.id==id)||{}).kelas,
+kat=p=>p>=db.set.th[0]?'Sangat Baik':p>=db.set.th[1]?'Baik':p>=db.set.th[2]?'Cukup':'Perlu Pembinaan',
+S=v=>['obs','sup','kom'].includes(v)?'nil':v,PS=['Lengkap','Belum lengkap','Perlu diperbaiki','Tidak relevan'],
+T={guru:'Data Guru',jadwal:'Jadwal Supervisi',per:'Pemeriksaan Perangkat',obs:'Observasi Pembelajaran',sup:'Supervisi Akademik',kom:'Evaluasi Kompetensi Guru',jur:'Jurnal Refleksi Pembelajaran',rtl:'Rencana Tindak Lanjut'};
+function pct(r,s){if(s=='per'){const v=Object.values(r.st||{}).filter(x=>x!='Tidak relevan');return v.length?v.filter(x=>x=='Lengkap').length/v.length*100:0}
+return Object.values(r.sc||{}).reduce((a,b)=>a+ +b,0)/((r.n||1)*(r.mx||db.set.max))*100}
+const F={guru:[['nama','Nama guru','t'],['nip','NIP/NUPTK','t'],['jabatan','Jabatan','t'],['mapel','Mata pelajaran','t'],['kelas','Kelas/fase','t']],
+jadwal:[['guru','Guru','g'],['tgl','Tanggal','d'],['jam','Jam','t'],['jenis','Jenis','s',['Observasi Pembelajaran','Pemeriksaan Perangkat','Supervisi Akademik']],['sup','Supervisor','t'],['st','Status','s',['Terjadwal','Selesai','Dibatalkan']]],
+per:[['guru','Guru','g'],['tgl','Tanggal','d'],['sup','Pemeriksa','t']],obs:[['guru','Guru','g'],['tgl','Tanggal','d'],['sup','Observer','t']],sup:[['guru','Guru','g'],['tgl','Tanggal','d'],['sup','Supervisor','t']],
+rtl:[['guru','Guru','g'],['tgl','Jadwal pelaksanaan','d'],['temuan','Temuan hasil supervisi','a'],['aspek','Aspek yang diperbaiki','t'],['kegiatan','Bentuk kegiatan','s',['Pendampingan individu','Diskusi dengan rekan sejawat','Pelatihan/workshop','Observasi pembelajaran lanjutan','Pengembangan media pembelajaran','Perbaikan perangkat pembelajaran']],['tujuan','Tujuan perbaikan','t'],['pj','Penanggung jawab','t'],['target','Target','t'],['bukti','Bukti pelaksanaan','t'],['hasil','Hasil evaluasi tindak lanjut','a'],['st','Status','s',['Belum dilaksanakan','Sedang berjalan','Selesai']]]};
+const X={per:[['cat','Catatan pemeriksa','a'],['rek','Rekomendasi perbaikan','a']],obs:[['kel','Kelebihan pembelajaran','a'],['per','Aspek yang perlu ditingkatkan','a'],['rek','Rekomendasi','a']]};X.sup=X.obs;X.kom=[['kel','Kekuatan atau keunggulan guru','a'],['per','Kompetensi yang perlu dikembangkan','a'],['lat','Kebutuhan pelatihan','a'],['rek','Rekomendasi pengembangan profesional','a'],['kes','Kesimpulan evaluasi','a']];
+F.kom=[['guru','Guru','g'],['tgl','Tanggal','d'],['sup','Evaluator','t'],['prd','Periode evaluasi','s',['Bulanan','Semesteran','Tahunan']]];
+F.jur=[['guru','Guru','g'],['tgl','Hari dan tanggal pembelajaran','d'],['kelas','Kelas','t'],['materi','Materi yang diajarkan','a'],['tujuan','Tujuan pembelajaran','a'],['baik','Hal yang berjalan dengan baik','a'],['kendala','Kendala selama pembelajaran','a'],['respons','Respons dan keterlibatan siswa','a'],['kesulitan','Kesulitan yang dialami peserta didik','a'],['strategi','Strategi yang perlu diperbaiki','a'],['rencana','Rencana perbaikan pertemuan berikutnya','a'],['tercapai','Apakah tujuan pembelajaran tercapai?','s',['Ya','Sebagian','Belum']],['terlibat','Apakah semua peserta didik terlibat?','s',['Ya','Sebagian','Tidak']],['pertahan','Apa yang perlu dipertahankan?','a'],['perbaiki','Apa yang perlu diperbaiki?','a']];
+const hari=t=>t?new Date(t+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
+const jurDet=r=>`<h4>Jurnal Refleksi – ${hari(r.tgl)}</h4><table>${F.jur.filter(f=>f[0]!='guru'&&f[0]!='tgl').map(f=>`<tr><td style="width:35%">${f[1]}</td><td>${esc(r[f[0]])}</td></tr>`).join('')}</table>`;
+
+const COLS={guru:[['nama','Nama'],['nip','NIP'],['mapel','Mapel'],['kelas','Kelas']],jadwal:[['tgl','Tanggal'],['guru','Guru'],['jenis','Jenis'],['sup','Supervisor'],['st','Status']],per:[['tgl','Tanggal'],['guru','Guru'],['_p','Kelengkapan']],nil:[['tgl','Tanggal'],['guru','Guru'],['_p','Skor'],['_k','Kategori']],jur:[['tgl','Tanggal'],['guru','Guru'],['materi','Materi'],['tercapai','Tujuan tercapai'],['terlibat','Semua terlibat']],rtl:[['tgl','Jadwal'],['guru','Guru'],['temuan','Temuan'],['kegiatan','Kegiatan'],['st','Status']]};
+let cur='dash',fl={};
+function cell(v,r,k){return k=='guru'?esc(gn(r.guru)):k=='_p'?pct(r,S(v)).toFixed(0)+'%':k=='_k'?kat(pct(r,'nil')):esc(r[k])}
+function fbar(v,rk){const ks=[...new Set(db.guru.map(g=>g.kelas).filter(Boolean))],f=rk?'rk()':`tbl('${v}')`;
+return `<div class=fb>`+(rk?'':`<input placeholder="Cari…" oninput="fl.q=this.value;${f}">`)+(v=='guru'||rk?'':`<select onchange="fl.g=this.value;${f}"><option value="">Semua guru</option>${db.guru.map(g=>`<option value=${g.id}>${esc(g.nama)}</option>`).join('')}</select>`)+
+`<select onchange="fl.k=this.value;${f}"><option value="">Semua kelas</option>${ks.map(k=>`<option>${esc(k)}</option>`).join('')}</select>`+(v=='guru'?'':`Periode <input type=date onchange="fl.a=this.value;${f}"> s/d <input type=date onchange="fl.z=this.value;${f}">`)+`</div>`}
+function rows(v){const s=S(v),q=(fl.q||'').toLowerCase();return db[s].filter(r=>(s!='nil'||r.inst==v)&&(!q||(JSON.stringify(r)+gn(r.guru)).toLowerCase().includes(q))&&(!fl.g||r.guru==fl.g)&&(!fl.k||(v=='guru'?r.kelas:gk(r.guru))==fl.k)&&(!fl.a||r.tgl>=fl.a)&&(!fl.z||r.tgl<=fl.z)).sort((a,b)=>(b.tgl||'').localeCompare(a.tgl||''))}
+function tbl(v){const R=rows(v),c=COLS[S(v)];$('#tb').innerHTML=R.length?`<table><tr>${c.map(x=>`<th>${x[1]}</th>`).join('')}<th>Aksi</th></tr>`+R.map(r=>`<tr>${c.map(x=>`<td>${cell(v,r,x[0])}</td>`).join('')}<td style="white-space:nowrap">${v=='guru'?`<button class="b s sm" onclick="pr(lapGuru('${r.id}'))">Laporan</button> `:v=='jadwal'?'':`<button class="b s sm" onclick="prOne('${v}','${r.id}')">Cetak</button> `}<button class="b s sm" onclick="openForm('${v}','${r.id}')">Edit</button> <button class="b r sm" onclick="del('${v}','${r.id}')">Hapus</button></td></tr>`).join('')+'</table>':'<p>Belum ada data. Klik “Tambah” untuk memulai.</p>'}
+function prOne(v,id){const s=S(v),r=db[s].find(x=>x.id==id);pr(hd()+'<h3 style="text-align:center">LAPORAN INDIVIDU</h3><p>Guru: <b>'+esc(gn(r.guru))+'</b></p>'+(s=='rtl'?rtlT([r]):s=='jur'?jurDet(r):det(r,s))+ttd())}
+function lst(v){return `<h2>${T[v]}</h2>`+(v=='guru'?'<p style="color:var(--m)">Data mata pelajaran dan kelas diisi pada setiap guru.</p>':'')+fbar(v)+`<p><button onclick="openForm('${v}')">Tambah</button></p><div class=ov id=tb></div>`}
+function del(v,id){if(!confirm('Hapus data ini? Tindakan tidak dapat dibatalkan.'))return;const s=S(v);db[s]=db[s].filter(x=>x.id!=id);
+if(v=='guru')['jadwal','per','nil','rtl','jur'].forEach(k=>db[k]=db[k].filter(x=>x.guru!=id));save();go(cur)}
+function fld([k,l,t,o],val){let i;if(t=='a')i=`<textarea data-k=${k} rows=3>${esc(val)}</textarea>`;
+else if(t=='s'||t=='g'){const op=t=='g'?db.guru.map(g=>[g.id,g.nama+(g.mapel?' – '+g.mapel:'')]):o.map(x=>[x,x]);i=`<select data-k=${k}>${t=='g'?'<option value="">— pilih guru —</option>':''}${op.map(([a,b])=>`<option value="${esc(a)}"${a==val?' selected':''}>${esc(b)}</option>`).join('')}</select>`}
+else i=`<input data-k=${k} type="${t=='d'?'date':'text'}" value="${esc(val)}">`;return `<label>${l}${i}</label>`}
+function openForm(v,id){if(v!='guru'&&!db.guru.length)return alert('Tambahkan data guru terlebih dahulu.');
+const s=S(v),r=id?db[s].find(x=>x.id==id):{tgl:today()};let h=`<h3>${id?'Edit':'Tambah'} ${T[v]}</h3><div class=g>${F[v].map(f=>fld(f,r[f[0]])).join('')}</div>`;
+if(v=='per')h+=`<div class=ov><table><tr><th>Dokumen</th><th>Status kelengkapan</th><th>Catatan</th></tr>`+lines(db.set.per).map((x,i)=>`<tr><td>${esc(x)}</td><td><select data-s=${i}>${PS.map(p=>`<option${(r.st?.[i]||PS[1])==p?' selected':''}>${p}</option>`).join('')}</select></td><td><input data-e=${i} value="${esc(r.nt?.[i])}"></td></tr>`).join('')+'</table></div>';
+if(S(v)=='nil'){const mx=id?r.mx:db.set.max;let g='';h+=`<div class=ov><table><tr><th>Indikator</th><th>Skor (1–${mx})</th><th>Bukti pengamatan / catatan</th></tr>`+ind(v).map((x,i)=>{let o='';if(x.g&&x.g!=g){g=x.g;o=`<tr><th colspan=3>${esc(g)}</th></tr>`}
+return o+`<tr><td>${esc(x.i)}</td><td><select data-c=${i}><option value="">–</option>${Array.from({length:mx},(_,j)=>`<option${r.sc?.[i]==j+1?' selected':''}>${j+1}</option>`).join('')}</select></td><td><input data-e=${i} value="${esc(r.ev?.[i])}"></td></tr>`}).join('')+'</table></div>'}
+h+=`<div class=g>${(X[v]||[]).map(f=>fld(f,r[f[0]])).join('')}</div><p><button onclick="saveF('${v}','${id||''}')">Simpan</button> <button class="b s" onclick="closeM()">Batal</button></p>`;
+$('#m').innerHTML=h;$('#mo').classList.add('on')}
+const closeM=()=>$('#mo').classList.remove('on');
+function saveF(v,id){const s=S(v),r=id?db[s].find(x=>x.id==id):{id:uid()};
+const old=JSON.stringify(r);qa('#m [data-k]').forEach(e=>r[e.dataset.k]=e.value.trim());
+if(v=='guru'&&!r.nama)return alert('Nama guru wajib diisi.');if(v!='guru'&&!r.guru)return alert('Pilih guru terlebih dahulu.');if(v!='guru'&&!r.tgl)return alert('Tanggal wajib diisi.');
+if(v=='per'){r.st={};r.nt={};qa('#m [data-s]').forEach(e=>r.st[e.dataset.s]=e.value);qa('#m [data-e]').forEach(e=>r.nt[e.dataset.e]=e.value)}
+if(S(v)=='nil'){r.inst=v;r.sc={};r.ev={};r.n=r.n&&id?r.n:ind(v).length;r.mx=r.mx&&id?r.mx:db.set.max;qa('#m [data-c]').forEach(e=>{if(e.value)r.sc[e.dataset.c]=+e.value});qa('#m [data-e]').forEach(e=>r.ev[e.dataset.e]=e.value)}
+if(!id)db[s].push(r);save();closeM();go(cur)}
+const hd=()=>`<div style="text-align:center"><b style="font-size:15px">${esc(db.set.app).toUpperCase()}</b><br><b>${esc(db.set.sekolah||'[Nama Sekolah]')}</b><br>NPSN ${esc(db.set.npsn||'-')} · ${esc(db.set.jenjang)} · Tahun Pelajaran ${esc(db.set.tp||'-')} · Semester ${esc(db.set.sem)}</div><hr>`,
+ttd=()=>`<table class=n style="margin-top:28px"><tr><td>Supervisor<br><br><br><br><br>(..............................)</td><td>Mengetahui,<br>Kepala Sekolah<br><br><br><br><u>${esc(db.set.kepsek||'..............................')}</u></td></tr></table>`,
+pr=h=>{$('#pa').innerHTML=h;print()};
+const rtlT=a=>`<table><tr><th>No</th><th>Temuan</th><th>Aspek</th><th>Kegiatan</th><th>Tujuan</th><th>PJ</th><th>Jadwal</th><th>Target</th><th>Bukti</th><th>Hasil</th><th>Status</th></tr>`+a.map((r,i)=>`<tr><td>${i+1}</td>${['temuan','aspek','kegiatan','tujuan','pj','tgl','target','bukti','hasil','st'].map(k=>`<td>${esc(r[k])}</td>`).join('')}</tr>`).join('')+'</table>';
+function det(r,s){if(s=='per')return `<h4>Pemeriksaan Perangkat – ${esc(r.tgl)}</h4><table><tr><th>No</th><th>Dokumen</th><th>Status</th><th>Catatan</th></tr>`+lines(db.set.per).map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x)}</td><td>${esc(r.st?.[i])}</td><td>${esc(r.nt?.[i])}</td></tr>`).join('')+`</table><p>Kelengkapan: <b>${pct(r,'per').toFixed(0)}%</b><br>Catatan: ${esc(r.cat)}<br>Rekomendasi: ${esc(r.rek)}</p>`;
+const p=pct(r,'nil');return `<h4>${T[r.inst]} – ${esc(r.tgl)} (${esc(r.sup)}${r.prd?', '+esc(r.prd):''})</h4><table><tr><th>No</th><th>Kelompok</th><th>Indikator</th><th>Skor</th><th>Bukti</th></tr>`+ind(r.inst).map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.g)}</td><td>${esc(x.i)}</td><td>${r.sc?.[i]??''}</td><td>${esc(r.ev?.[i])}</td></tr>`).join('')+`</table><p>Rekap: skor ${Object.values(r.sc||{}).reduce((a,b)=>a+b,0)} dari ${r.n*r.mx} = <b>${p.toFixed(1)}%</b> (${kat(p)})${X[r.inst].map(f=>'<br>'+f[1]+': '+esc(r[f[0]])).join('')}</p>${r.inst=='kom'?'<p><i>Instrumen internal sekolah, bukan penilaian resmi pemerintah.</i></p>':''}`}
+function lapGuru(id){const g=db.guru.find(x=>x.id==id),my=s=>db[s].filter(r=>r.guru==id).sort((a,b)=>a.tgl>b.tgl?1:-1);
+return hd()+`<h3 style="text-align:center">LAPORAN HASIL SUPERVISI GURU</h3><table><tr><td>Nama</td><td>${esc(g.nama)}</td><td>NIP/NUPTK</td><td>${esc(g.nip)}</td></tr><tr><td>Mata pelajaran</td><td>${esc(g.mapel)}</td><td>Kelas/fase</td><td>${esc(g.kelas)}</td></tr></table>`+my('per').map(r=>det(r,'per')).join('')+my('nil').map(r=>det(r,'nil')).join('')+(my('rtl').length?'<h4>Rencana Tindak Lanjut</h4>'+rtlT(my('rtl')):'')+ttd()}
+function rekapRows(){const P=r=>(!fl.a||r.tgl>=fl.a)&&(!fl.z||r.tgl<=fl.z),av=(a,s)=>a.length?a.reduce((t,r)=>t+pct(r,s),0)/a.length:null;
+return db.guru.filter(g=>!fl.k||g.kelas==fl.k).map(g=>{const m=s=>db[s].filter(r=>r.guru==g.id&&P(r)),n=m('nil'),o=n.filter(r=>r.inst=='obs'),u=n.filter(r=>r.inst=='sup'),p=m('per'),t=m('rtl'),k=n.filter(r=>r.inst=='kom');
+return{g,o:av(o,'nil'),u:av(u,'nil'),p:av(p,'per'),n:o.length+u.length+p.length+k.length,k:av(k,'nil'),t:t.filter(x=>x.st=='Selesai').length+'/'+t.length}})}
+const fm=x=>x==null?'-':x.toFixed(0)+'% ('+kat(x)+')',fp=x=>x==null?'-':x.toFixed(0)+'%';
+const rkT=R=>`<table><tr><th>Guru</th><th>Mapel</th><th>Kelas</th><th>Jml kegiatan</th><th>Observasi</th><th>Supervisi akademik</th><th>Evaluasi kompetensi</th><th>Kelengkapan perangkat</th><th>RTL selesai</th></tr>`+R.map(x=>`<tr><td>${esc(x.g.nama)}</td><td>${esc(x.g.mapel)}</td><td>${esc(x.g.kelas)}</td><td>${x.n}</td><td>${fm(x.o)}</td><td>${fm(x.u)}</td><td>${fm(x.k)}</td><td>${fp(x.p)}</td><td>${x.t}</td></tr>`).join('')+'</table>';
+const rk=()=>$('#tb').innerHTML=rkT(rekapRows());
+function riw(){const id=fl.g,L=[];if(id){db.jadwal.filter(r=>r.guru==id).forEach(r=>L.push([r.tgl,'Jadwal: '+r.jenis,r.st]));db.per.filter(r=>r.guru==id).forEach(r=>L.push([r.tgl,'Pemeriksaan perangkat',fp(pct(r,'per'))]));db.nil.filter(r=>r.guru==id).forEach(r=>L.push([r.tgl,T[r.inst],fm(pct(r,'nil'))]));db.rtl.filter(r=>r.guru==id).forEach(r=>L.push([r.tgl,'RTL: '+r.aspek,r.st]))}
+L.sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));$('#tb').innerHTML=!id?'<p>Pilih guru untuk melihat riwayat.</p>':(L.length?`<table><tr><th>Tanggal</th><th>Kegiatan</th><th>Hasil/status</th></tr>${L.map(x=>`<tr>${x.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table><p><button onclick="pr(lapGuru('${id}'))">Cetak laporan individu</button></p>`:'<p>Belum ada riwayat.</p>')}
+const bk=()=>`<div class=warn>⚠ Data tersimpan di browser ini saja. ${db.last?'Backup terakhir: '+new Date(db.last).toLocaleDateString('id-ID')+'. ':'<b>Anda belum pernah backup.</b> '}Lakukan backup berkala. <button class="sm" onclick="exp()">Ekspor sekarang</button></div>`;
+function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,1)],{type:'application/json'}));a.download='backup-supervisi-'+today()+'.json';a.click();db.last=Date.now();save();go(cur)}
+function imp(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!j.guru||!j.set)throw 0;if(!confirm('Impor akan MENIMPA semua data saat ini. Lanjutkan?'))return;db=Object.assign(D0(),j);db.set=Object.assign(D0().set,j.set);save();go('dash')}catch(e){alert('File backup tidak valid.')}};r.readAsText(f)}
+async function push(){const u=db.set.url;if(!u)return alert('Isi URL Apps Script terlebih dahulu.');try{const j=await(await fetch(u,{method:'POST',body:JSON.stringify(db)})).json();alert(j.ok?'Data berhasil dikirim ke Google Sheets.':'Gagal: '+j.err)}catch(e){alert('Gagal terhubung ke Google Sheets: '+e.message)}}
+async function pull(){const u=db.set.url;if(!u)return alert('Isi URL Apps Script terlebih dahulu.');try{const j=await(await fetch(u)).json();if(!confirm('Data lokal akan ditimpa data dari Google Sheets. Lanjutkan?'))return;db=Object.assign(D0(),j);db.set=Object.assign(D0().set,j.set,{url:u});save();go('set')}catch(e){alert('Gagal mengambil data: '+e.message)}}
+function setT(k,l,t='text'){return `<label>${l}<input type=${t} data-t=${k} value="${esc(db.set[k])}"></label>`}
+function saveSet(){qa('#c [data-t]').forEach(e=>db.set[e.dataset.t]=e.value);const s=db.set;s.th=[+s.th0||85,+s.th1||70,+s.th2||55];delete s.th0;delete s.th1;delete s.th2;s.max=Math.max(2,Math.min(10,+s.max||4));save();alert('Pengaturan disimpan.');go('set')}
+function resetAll(){if(confirm('Hapus SEMUA data di browser ini? Pastikan sudah backup.')&&confirm('Yakin? Ini tidak bisa dibatalkan.')){db=D0();save();go('dash')}}
+function jbR(){const q=r=>(!fl.g||r.guru==fl.g)&&(!fl.m||r.tgl.slice(0,7)==fl.m),L0=db.jur.filter(q).sort((a,b)=>a.tgl>b.tgl?1:-1),M={};L0.forEach(r=>{const k=r.tgl.slice(0,7);(M[k]=M[k]||[]).push(r)});
+const c=(a,k,x)=>a.filter(r=>r[k]==x).length;
+return Object.keys(M).map(m=>{const a=M[m],L=(k,l)=>{const z=a.filter(r=>r[k]);return z.length?`<p><b>${l}</b></p><ul>${z.map(r=>`<li>${esc(r.tgl)}: ${fl.g?'':esc(gn(r.guru))+' – '}${esc(r[k])}</li>`).join('')}</ul>`:''};
+return `<h4>${new Date(m+'-01T00:00:00').toLocaleDateString('id-ID',{month:'long',year:'numeric'})}</h4><table><tr><th>Jumlah jurnal</th><th>Tujuan tercapai (Ya/Sebagian/Belum)</th><th>Semua siswa terlibat (Ya/Sebagian/Tidak)</th></tr><tr><td>${a.length}</td><td>${c(a,'tercapai','Ya')}/${c(a,'tercapai','Sebagian')}/${c(a,'tercapai','Belum')}</td><td>${c(a,'terlibat','Ya')}/${c(a,'terlibat','Sebagian')}/${c(a,'terlibat','Tidak')}</td></tr></table>`+L('baik','Hal yang berjalan baik')+L('kendala','Kendala')+L('kesulitan','Kesulitan peserta didik')+L('strategi','Strategi yang perlu diperbaiki')+L('rencana','Rencana perbaikan')}).join('')||'<p>Belum ada jurnal pada filter ini.</p>'}
+const jb=()=>$('#tb').innerHTML=jbR();
+const V={jurbln(){return `<h2>Rekap Refleksi Bulanan</h2><div class=fb><select onchange="fl.g=this.value;jb()"><option value="">Semua guru</option>${db.guru.map(g=>`<option value=${g.id}>${esc(g.nama)}</option>`).join('')}</select><input type=month onchange="fl.m=this.value;jb()"></div><p><button onclick="pr(hd()+'<h3 style=text-align:center>REKAP REFLEKSI PEMBELAJARAN BULANAN</h3>'+(fl.g?'<p>Guru: '+esc(gn(fl.g))+'</p>':'')+jbR())">Cetak rekap</button></p><div class=ov id=tb></div>`},
+dash(){const u=db.jadwal.filter(j=>j.st=='Terjadwal').sort((a,b)=>a.tgl>b.tgl?1:-1).slice(0,5),r=db.rtl;
+return `<h2>Dashboard</h2>${bk()}<div class=st><div><b>${db.guru.length}</b>Guru</div><div><b>${db.jadwal.filter(j=>j.st=='Terjadwal').length}</b>Jadwal mendatang</div><div><b>${db.nil.length}</b>Penilaian supervisi</div><div><b>${db.per.length}</b>Perangkat diperiksa</div><div><b>${r.filter(x=>x.st=='Selesai').length}/${r.length}</b>RTL selesai</div></div><div class=card><b>Jadwal supervisi terdekat</b>${u.length?`<table>${u.map(j=>`<tr><td>${esc(j.tgl)} ${esc(j.jam)}</td><td>${esc(gn(j.guru))}</td><td>${esc(j.jenis)}</td></tr>`).join('')}</table>`:'<p>Belum ada jadwal.</p>'}</div>`+(db.set.sekolah?'':'<div class=card>Mulai dari menu <b>Pengaturan</b> untuk mengisi identitas sekolah, lalu tambahkan <b>Data Guru</b>.</div>')},
+rekap(){return `<h2>Rekapitulasi Hasil Supervisi</h2>${fbar('rekap',1)}<p><button onclick="pr(hd()+'<h3 style=text-align:center>REKAPITULASI HASIL SUPERVISI</h3>'+rkT(rekapRows())+ttd())">Cetak laporan keseluruhan</button></p><div class=ov id=tb></div>`},
+riwayat(){return `<h2>Riwayat Supervisi Guru</h2><div class=fb><select onchange="fl.g=this.value;riw()"><option value="">— pilih guru —</option>${db.guru.map(g=>`<option value=${g.id}>${esc(g.nama)}</option>`).join('')}</select></div><div class=ov id=tb></div>`},
+set(){const s=db.set;return `<h2>Pengaturan</h2><div class=card><div class=g>${setT('app','Nama aplikasi')}${setT('sekolah','Nama sekolah')}${setT('npsn','NPSN')}<label>Jenjang<select data-t=jenjang>${'PAUD,TK,SD,SMP,SMA,SMK,MI,MTs,MA'.split(',').map(x=>`<option${s.jenjang==x?' selected':''}>${x}</option>`).join('')}</select></label>${setT('tp','Tahun pelajaran')}<label>Semester<select data-t=sem><option${s.sem=='Ganjil'?' selected':''}>Ganjil</option><option${s.sem=='Genap'?' selected':''}>Genap</option></select></label>${setT('kepsek','Nama kepala sekolah')}${setT('max','Skor maksimum per indikator (2–10)','number')}</div>
+<div class=g><label>Batas Sangat Baik (%)<input type=number data-t=th0 value="${s.th[0]}"></label><label>Batas Baik (%)<input type=number data-t=th1 value="${s.th[1]}"></label><label>Batas Cukup (%)<input type=number data-t=th2 value="${s.th[2]}"></label></div><p style="color:var(--m);font-size:13px">Skala, batas kategori, dan indikator ini bukan standar resmi; sesuaikan dengan kebijakan sekolah. Perubahan indikator tidak mengubah data lama (skor lama mengikuti urutan indikator).</p>
+<label>Indikator observasi pembelajaran (satu per baris: Kelompok|Indikator)<textarea data-t=obs rows=6>${esc(s.obs)}</textarea></label><br><label>Indikator supervisi akademik (satu per baris: Kelompok|Indikator)<textarea data-t=sup rows=6>${esc(s.sup)}</textarea></label><br><label>Indikator evaluasi kompetensi guru (Kelompok|Indikator)<textarea data-t=kom rows=6>${esc(s.kom)}</textarea></label><br><label>Daftar pemeriksaan perangkat (satu dokumen per baris)<textarea data-t=per rows=6>${esc(s.per)}</textarea></label></div>
+<div class=card><b>Google Sheets</b><p style="color:var(--m);font-size:13px">Tempel URL Web App dari Apps Script (lihat Code.gs). Data tetap disimpan lokal; gunakan tombol berikut untuk sinkron.</p>${setT('url','URL Web App Apps Script')}<p><button class="b s" onclick="saveSet();push()">Kirim ke Google Sheets</button> <button class="b s" onclick="saveSet();pull()">Ambil dari Google Sheets</button></p></div>
+<p><button onclick="saveSet()">Simpan pengaturan</button></p><div class=card><b>Backup data</b><p><button onclick="exp()">Ekspor data (.json)</button> <label class="b s" style="display:inline-block">Impor data<input type=file accept=".json" hidden onchange="imp(this.files[0])"></label> <button class="b r" onclick="resetAll()">Hapus semua data</button></p></div>`}};
+const N=[['dash','Dashboard'],['guru','Data Guru'],['jadwal','Jadwal Supervisi'],['per','Pemeriksaan Perangkat'],['obs','Observasi Pembelajaran'],['sup','Supervisi Akademik'],['kom','Evaluasi Kompetensi'],['jur','Jurnal Refleksi'],['jurbln','Rekap Refleksi Bulanan'],['rtl','Tindak Lanjut (RTL)'],['riwayat','Riwayat Guru'],['rekap','Rekapitulasi'],['set','Pengaturan']];
+$('#nv').innerHTML=N.map(n=>`<a data-v=${n[0]} onclick="go('${n[0]}')">${n[1]}</a>`).join('');
+function go(v){cur=v;fl={q:'',g:'',k:'',a:'',z:'',m:''};$('#hT').textContent=db.set.app;$('#hS').textContent=[db.set.sekolah,db.set.tp&&'TP '+db.set.tp,db.set.sem&&'Semester '+db.set.sem].filter(Boolean).join(' · ');qa('nav a').forEach(a=>a.classList.toggle('on',a.dataset.v==v));
+$('#c').innerHTML=(V[v]||(()=>lst(v)))();if(T[v]&&!['riwayat'].includes(v))tbl(v);if(v=='rekap')rk();if(v=='jurbln')jb();if(v=='riwayat')riw();scrollTo(0,0)}
+go('dash');
+</script></body></html>
